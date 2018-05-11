@@ -1,0 +1,29 @@
+OrdererOrgs:
+  - Name : Orderer
+    Domain : supplychain.com
+    Specs:
+        - Hostname: orderer
+PeerOrgs:
+  - Name: warehouse
+    Domain: warehouse.supplychain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+  - Name: collection
+    Domain: collection.supplychain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+  - Name: customer
+    Domain: customer.supplychain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1

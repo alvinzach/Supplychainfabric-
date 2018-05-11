@@ -1,0 +1,85 @@
+Profiles:
+
+    OrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+        Consortiums:
+            SupplychainConsortium:
+                Organizations:
+                    - *warehouse
+                    - *collection
+                    - *customer
+
+    supplychainChannel:
+        Consortium: SupplychainConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *warehouse
+                - *collection
+                - *customer
+                
+
+
+Organizations:
+
+    
+    - &OrdererOrg
+        
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: crypto-config/ordererOrganizations/supplychain.com/msp
+
+    - &warehouse
+        Name: warehouseMSP
+        ID: warehouseMSP
+
+        MSPDir: crypto-config/peerOrganizations/warehouse.supplychain.com/msp
+
+        AnchorPeers:
+            
+            - Host: peer0.warehouse.supplychain.com
+              Port: 7051
+    - &collection
+        Name: collectionMSP
+        ID: collectionMSP
+
+        MSPDir: crypto-config/peerOrganizations/collection.supplychain.com/msp
+        AnchorPeers: 
+            - Host: peer0.collection.supplychain.com
+              POrt: 7051
+    - &customer
+        Name: customerMSP
+        ID: customerMSP
+
+        MSPDir: crypto-config/peerOrganizations/customer.supplychain.com/msp
+        AnchorPeers: 
+            - Host: peer0.customer.supplychain.com
+              POrt: 7051
+Orderer: &OrdererDefaults
+
+    OrdererType: solo
+
+    Addresses:
+        - orderer.supplychain.com:7050
+
+    BatchTimeout: 2s
+    BatchSize:
+
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+
+    Kafka:
+        
+        Brokers:
+            - 127.0.0.1:9092
+
+    
+    Organizations:
+
+Application: &ApplicationDefaults
+
+    Organizations:
