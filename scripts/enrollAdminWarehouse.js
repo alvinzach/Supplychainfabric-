@@ -23,7 +23,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
     	trustedRoots: [],
     	verify: false
     };
-    fabric_ca_client = new Fabric_CA_Client('http://localhost:7054', tlsOptions , 'ca.supplychain.com', crypto_suite);
+    fabric_ca_client = new Fabric_CA_Client('http://localhost:7054', tlsOptions , 'ca.warehouse.supplychain.com', crypto_suite);
     return fabric_client.getUserContext('admin', true);
 }).then((user_from_store) => {
     if (user_from_store && user_from_store.isEnrolled()) {

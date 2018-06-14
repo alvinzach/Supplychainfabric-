@@ -11,12 +11,51 @@ channel.addOrderer(order)
 var peer=fabric_client.newPeer('grpc://localhost:7051')
 channel.addPeer(peer)
 router.post('/getStatus',(req,res)=>{
-    
+    var member_user = null;
+    var store_path = './customerCerts';
+    var tx_id = null;
+    Fabric_Client.newDefaultKeyValueStore({ path: store_path
+    }).then((state_store) => {
+        fabric_client.setStateStore(state_store);
+        var crypto_suite = Fabric_Client.newCryptoSuite();
+        var crypto_store = Fabric_Client.newCryptoKeyStore({path: store_path});
+        crypto_suite.setCryptoKeyStore(crypto_store);
+        fabric_client.setCryptoSuite(crypto_suite);
+        return fabric_client.getUserContext('customer', true);
+    }).then((user_from_store) => {
+        if (user_from_store && user_from_store.isEnrolled()) {
+            console.log('Successfully loaded customer from persistence');
+            member_user = user_from_store;
+        } else {
+            throw new Error('Failed to get customer');
+        }
+        const request = {
+            chaincodeId: 'sc',
+            fcn: 'queryPackage',
+            args: [req.body.id.toString()]
+        };
+        return channel.queryByChaincode(request);
+    }).then((query_responses) => {
+        console.log("Query has completed, checking results");
+        if (query_responses && query_responses.length == 1) {
+            if (query_responses[0] instanceof Error) {
+                res.json({success:false,message:'Some error occoured while queriying ledger'})
+            } else {
+                res.json({success:true,message:JSON.parse(query_responses[0].toString())})
+            }
+        } else {
+            res.json({success:false,message:"No payloads were returned from query"})
+        }
+    }).catch((err) => {
+        console.error('Failed to query successfully :: ' + err);
+        res.json({success:false,message:'Some error occoured while queriying ledger'})
+
+    });
 })
 router.post('/warehouse/add',(req,res)=>{
     var tx_id=null
     var member_user=null;
-    var store_path="./warehouseCerts"
+    var store_path="./collectionCerts"
     console.log(__dirname)
     Fabric_Client.newDefaultKeyValueStore({path:store_path}).then((state_store)=>{
         fabric_client.setStateStore(state_store)
@@ -24,7 +63,7 @@ router.post('/warehouse/add',(req,res)=>{
         var crypto_store=Fabric_Client.newCryptoKeyStore({path:store_path})
         crypto_suite.setCryptoKeyStore(crypto_store)
         fabric_client.setCryptoSuite(crypto_suite)
-        return fabric_client.getUserContext('warehouse',true)
+        return fabric_client.getUserContext('collection',true)
     }).then((user_from_store)=>{
 
         if(user_from_store&&user_from_store.isEnrolled()){
@@ -38,7 +77,7 @@ router.post('/warehouse/add',(req,res)=>{
         var request={
             chaincodeId:'sc',
             fcn:'recordPackage',
-            args:[req.body.id.toString(),req.body.status.toString(),'warehouse'],
+            args:[req.body.id.toString(),req.body.status.toString(),'collection'],
             chainId:'supplychainchannel',
             txId:tx_id
         }
@@ -68,7 +107,7 @@ router.post('/warehouse/add',(req,res)=>{
             var sendPromise=channel.sendTransaction(request)
             promises.push(sendPromise)
             let event_hub =fabric_client.newEventHub();
-            event_hub.setPeerAddr('grpc://localhost:7053')
+            event_hub.setPeerAddr('grpc://localhost:7153')
             let txPromise=new Promise((resolve,reject)=>{
                 let handle=setTimeout(()=>{
                     event_hub.disconnect()
