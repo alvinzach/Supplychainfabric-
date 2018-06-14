@@ -2,3 +2,6 @@
 node enrollAdminCollectioncentre
 node enrollAdminCustomer
 node enrollAdminWarehouse
+node registerCollectionUser
+node registerCustomerUser
+node registerWarehouseUser

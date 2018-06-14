@@ -11,7 +11,7 @@ var fabric_client = new Fabric_Client();
 var fabric_ca_client = null;
 var admin_user = null;
 var member_user = null;
-var store_path = path.join(__dirname, '../warehouseCerts');
+var store_path = path.join(__dirname, '../customerCerts');
 console.log(' Store path:'+store_path);
 Fabric_Client.newDefaultKeyValueStore({ path: store_path
 }).then((state_store) => {
@@ -34,16 +34,16 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
         throw new Error('Failed to get admin.... run enrollAdmin.js');
     }
 
-    return fabric_ca_client.register({enrollmentID: 'warehouse', affiliation: 'org1.department1',role: 'client'}, admin_user);
+    return fabric_ca_client.register({enrollmentID: 'customer', affiliation: 'org1.department1',role: 'client'}, admin_user);
 }).then((secret) => {
-    console.log('Successfully registered warehouse - secret:'+ secret);
+    console.log('Successfully registered customer - secret:'+ secret);
 
-    return fabric_ca_client.enroll({enrollmentID: 'warehouse', enrollmentSecret: secret});
+    return fabric_ca_client.enroll({enrollmentID: 'customer', enrollmentSecret: secret});
 }).then((enrollment) => {
-  console.log('Successfully enrolled member user "warehouse" ');
+  console.log('Successfully enrolled member user "customer" ');
   return fabric_client.createUser(
-     {username: 'warehouse',
-     mspid: 'warehouseMSP',
+     {username: 'customer',
+     mspid: 'customerMSP',
      cryptoContent: { privateKeyPEM: enrollment.key.toBytes(), signedCertPEM: enrollment.certificate }
      });
 }).then((user) => {
@@ -51,7 +51,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 
      return fabric_client.setUserContext(member_user);
 }).then(()=>{
-     console.log('warehouse was successfully registered and enrolled and is ready to intreact with the fabric network');
+     console.log('customer was successfully registered and enrolled and is ready to intreact with the fabric network');
 
 }).catch((err) => {
     console.error('Failed to register: ' + err);

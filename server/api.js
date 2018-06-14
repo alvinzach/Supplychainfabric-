@@ -10,10 +10,13 @@ var order= fabric_client.newOrderer('grpc://localhost:7050')
 channel.addOrderer(order)
 var peer=fabric_client.newPeer('grpc://localhost:7051')
 channel.addPeer(peer)
+router.post('/getStatus',(req,res)=>{
+    
+})
 router.post('/warehouse/add',(req,res)=>{
     var tx_id=null
     var member_user=null;
-    var store_path="./warehouseCA"
+    var store_path="./warehouseCerts"
     console.log(__dirname)
     Fabric_Client.newDefaultKeyValueStore({path:store_path}).then((state_store)=>{
         fabric_client.setStateStore(state_store)
@@ -21,7 +24,7 @@ router.post('/warehouse/add',(req,res)=>{
         var crypto_store=Fabric_Client.newCryptoKeyStore({path:store_path})
         crypto_suite.setCryptoKeyStore(crypto_store)
         fabric_client.setCryptoSuite(crypto_suite)
-        return fabric_client.getUserContext('user1',true)
+        return fabric_client.getUserContext('warehouse',true)
     }).then((user_from_store)=>{
 
         if(user_from_store&&user_from_store.isEnrolled()){
@@ -35,7 +38,7 @@ router.post('/warehouse/add',(req,res)=>{
         var request={
             chaincodeId:'sc',
             fcn:'recordPackage',
-            args:[req.body.id,req.body.status,req.body.location],
+            args:[req.body.id.toString(),req.body.status.toString(),'warehouse'],
             chainId:'supplychainchannel',
             txId:tx_id
         }

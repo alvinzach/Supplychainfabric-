@@ -11,7 +11,7 @@ var fabric_ca_client = null;
 var admin_user = null;
 var member_user = null;
 var MSPids=['collectionMSP','warehouseMSP','customerMSP']
-var store_path ="../customerCA"
+var store_path ="../customerCerts"
 Fabric_Client.newDefaultKeyValueStore({ path: store_path
 }).then((state_store) => {
     fabric_client.setStateStore(state_store);
@@ -38,7 +38,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
           console.log('Successfully enrolled admin user "admin"');
           return fabric_client.createUser(
               {username: 'admin',
-                  mspid: 'customerCA',
+                  mspid: 'customerMSP',
                   cryptoContent: { privateKeyPEM: enrollment.key.toBytes(), signedCertPEM: enrollment.certificate }
               });
         }).then((user) => {
