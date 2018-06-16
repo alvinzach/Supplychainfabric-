@@ -87,7 +87,7 @@ services:
       - CORE_PEER_ADDRESS=peer0.warehouse.supplychain.com:7051
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_basic
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
@@ -103,7 +103,7 @@ services:
         - ./config:/etc/hyperledger/configtx
     depends_on:
       - orderer.supplychain.com
-      - couchdb
+      - couchdb0
     networks:
       - basic
 
@@ -120,7 +120,7 @@ services:
       - CORE_PEER_ADDRESS=peer0.collection.supplychain.com:7051
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_basic
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
@@ -136,7 +136,7 @@ services:
         - ./config:/etc/hyperledger/configtx
     depends_on:
       - orderer.supplychain.com
-      - couchdb
+      - couchdb1
     networks:
       - basic
 
@@ -153,7 +153,7 @@ services:
       - CORE_PEER_ADDRESS=peer0.customer.supplychain.com:7051
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_basic
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
@@ -169,7 +169,7 @@ services:
         - ./config:/etc/hyperledger/configtx
     depends_on:
       - orderer.supplychain.com
-      - couchdb
+      - couchdb2
     networks:
       - basic    
 
@@ -197,14 +197,36 @@ services:
     networks:
       - basic
 
-  couchdb:
-    container_name: couchdb
+  couchdb0:
+    container_name: couchdb0
     image: hyperledger/fabric-couchdb:latest
     environment:
       - COUCHDB_USER=
       - COUCHDB_PASSWORD=
     ports:
       - 5984:5984
+    networks:
+      - basic
+
+  couchdb1:
+    container_name: couchdb1
+    image: hyperledger/fabric-couchdb:latest
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 5985:5984
+    networks:
+      - basic
+
+  couchdb2:
+    container_name: couchdb2
+    image: hyperledger/fabric-couchdb:latest
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 5986:5984
     networks:
       - basic
 

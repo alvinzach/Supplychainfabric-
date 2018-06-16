@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -6,7 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-    "time"
+	"time"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	peer "github.com/hyperledger/fabric/protos/peer"
 )
@@ -16,10 +16,10 @@ type SmartContract struct {
 
 type Package struct {
 	ObjectType string `json:"docType"`
-	Id    string `json:"id"`
-	Status string `json:"status"`
-	Location string `json:"loaction"`
-	Timestamp string `json:"time"`
+	Id         string `json:"id"`
+	Status     string `json:"status"`
+	Location   string `json:"location"`
+	Timestamp  string `json:"time"`
 }
 
 func (s *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
@@ -35,8 +35,8 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return s.recordPackage(stub, args)
 	} else if function == "queryAllPackage" {
 		return s.queryAllPackage(stub)
-	}else if function == "getHistory" {
-		return s.getHistory(stub,args)
+	} else if function == "getHistory" {
+		return s.getHistory(stub, args)
 	}
 	return shim.Error("Invalid Smart Contract function name.")
 }
@@ -54,14 +54,13 @@ func (s *SmartContract) queryPackage(stub shim.ChaincodeStubInterface, args []st
 	return shim.Success(packageAsBytes)
 }
 
-
 func (s *SmartContract) recordPackage(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
 	if len(args) != 3 {
 		return shim.Error("Incorrect number of arguments. Expecting 3")
 	}
 	fmt.Println("hello")
-	var Package = Package{ObjectType:"package" ,Id: args[0], Status: args[1], Location: args[2], Timestamp: strconv.FormatInt(time.Now().Unix(), 10)}
+	var Package = Package{ObjectType: "package", Id: args[0], Status: args[1], Location: args[2], Timestamp: strconv.FormatInt(time.Now().Unix(), 10)}
 	fmt.Println(Package)
 	PackageAsBytes, _ := json.Marshal(Package)
 	err := stub.PutState(args[0], PackageAsBytes)
