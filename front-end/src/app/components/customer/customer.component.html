@@ -1,3 +1,16 @@
-<p>
-  customer works!
-</p>
+<form>
+   
+  <input type="text" class="form-control" [(ngModel)] ="id" name="id"/> <br>
+  <input type="submit" class="btn btn-lg btn-primary" (click)="submit()" />
+  
+  <div *ngIf="loading" class="alert alert-light" role="alert">
+      checkung status
+  </div> <br>
+  <div *ngIf="success" class="alert alert-success" role="alert">
+      The package is at <b> {{location}}</b> . Status : <b>{{status}}</b>
+  </div>
+  <div *ngIf="failure" class="alert alert-danger" role="alert">
+      Some error occoured
+  </div>
+
+</form>

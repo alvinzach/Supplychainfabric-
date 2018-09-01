@@ -12,9 +12,12 @@ services:
       - FABRIC_CA_SERVER_CA_NAME=ca.warehouse.supplychain.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.warehouse.supplychain.com-cert.pem
       - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/3c6e1fe63ee3affee044b89634cada7b8cb5e71b33c7003830a88396591240a9_sk
+      - FABRIC_CA_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.warehouse.supplychain.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/3c6e1fe63ee3affee044b89634cada7b8cb5e71b33c7003830a88396591240a9_sk
     ports:
       - "7054:7054"
-    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --tls.enabled --tls.certfile /etc/hyperledger/fabric-ca-server-config/ca.warehouse.supplychain.com-cert.pem --tls.keyfile /etc/hyperledger/fabric-ca-server-config/3c6e1fe63ee3affee044b89634cada7b8cb5e71b33c7003830a88396591240a9_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/warehouse.supplychain.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.warehouse.supplychain.com
@@ -28,9 +31,12 @@ services:
       - FABRIC_CA_SERVER_CA_NAME=ca.collection.supplychain.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.collection.supplychain.com-cert.pem
       - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/be6cb0f91834e1bc7c8c55f0d067e20c63989225155ffe1477a2901efbda9ab8_sk
+      - FABRIC_CA_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.collection.supplychain.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/be6cb0f91834e1bc7c8c55f0d067e20c63989225155ffe1477a2901efbda9ab8_sk
     ports:
       - "7055:7054"
-    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --tls.enabled --tls.keyfile /etc/hyperledger/fabric-ca-server-config/be6cb0f91834e1bc7c8c55f0d067e20c63989225155ffe1477a2901efbda9ab8_sk --tls.certfile /etc/hyperledger/fabric-ca-server-config/ca.collection.supplychain.com-cert.pem -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/collection.supplychain.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.collection.supplychain.com
@@ -44,9 +50,12 @@ services:
       - FABRIC_CA_SERVER_CA_NAME=ca.customer.supplychain.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.customer.supplychain.com-cert.pem
       - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/6e5116d2a9edd4a374dcfcbf0ae3bfd7a7f1de6638d35179df16e0ef674ab2d5_sk
+      - FABRIC_CA_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.customer.supplychain.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/6e5116d2a9edd4a374dcfcbf0ae3bfd7a7f1de6638d35179df16e0ef674ab2d5_sk
     ports:
       - "7056:7054"
-    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --tls.enabled --tls.certfile /etc/hyperledger/fabric-ca-server-config/ca.customer.supplychain.com-cert.pem --tls.keyfile /etc/hyperledger/fabric-ca-server-config/6e5116d2a9edd4a374dcfcbf0ae3bfd7a7f1de6638d35179df16e0ef674ab2d5_sk -b admin:adminpw -d'
     volumes:
       - ./crypto-config/peerOrganizations/customer.supplychain.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.customer.supplychain.com
@@ -63,6 +72,10 @@ services:
       - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/msp/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/msp/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/msp/orderer/tls/ca.crt,/etc/hyperledger/msp/peerwarehouse/tls/ca.crt,/etc/hyperledger/msp/peercollection/tls/ca.crt,/etc/hyperledger/msp/peercustomer/tls/ca.crt]
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
     command: orderer
     ports:
@@ -71,6 +84,8 @@ services:
         - ./config/:/etc/hyperledger/configtx
         - ./crypto-config/ordererOrganizations/supplychain.com/orderers/orderer.supplychain.com/:/etc/hyperledger/msp/orderer
         - ./crypto-config/peerOrganizations/warehouse.supplychain.com/peers/peer0.warehouse.supplychain.com/:/etc/hyperledger/msp/peerwarehouse
+        - ./crypto-config/peerOrganizations/collection.supplychain.com/peers/peer0.collection.supplychain.com/:/etc/hyperledger/msp/peercollection
+        - ./crypto-config/peerOrganizations/customer.supplychain.com/peers/peer0.customer.supplychain.com/:/etc/hyperledger/msp/peercustomer
     networks:
       - basic
 
@@ -85,6 +100,13 @@ services:
       - CORE_PEER_LOCALMSPID=warehouseMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
       - CORE_PEER_ADDRESS=peer0.warehouse.supplychain.com:7051
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_basic
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
@@ -99,6 +121,7 @@ services:
     volumes:
         - /var/run/:/host/var/run/
         - ./crypto-config/peerOrganizations/warehouse.supplychain.com/peers/peer0.warehouse.supplychain.com/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/warehouse.supplychain.com/peers/peer0.warehouse.supplychain.com/tls:/etc/hyperledger/fabric/tls
         - ./crypto-config/peerOrganizations/warehouse.supplychain.com/users:/etc/hyperledger/msp/users
         - ./config:/etc/hyperledger/configtx
     depends_on:
@@ -118,6 +141,13 @@ services:
       - CORE_PEER_LOCALMSPID=collectionMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
       - CORE_PEER_ADDRESS=peer0.collection.supplychain.com:7051
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_basic
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
@@ -132,6 +162,7 @@ services:
     volumes:
         - /var/run/:/host/var/run/
         - ./crypto-config/peerOrganizations/collection.supplychain.com/peers/peer0.collection.supplychain.com/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/collection.supplychain.com/peers/peer0.collection.supplychain.com/tls:/etc/hyperledger/fabric/tls
         - ./crypto-config/peerOrganizations/collection.supplychain.com/users:/etc/hyperledger/msp/users
         - ./config:/etc/hyperledger/configtx
     depends_on:
@@ -151,6 +182,13 @@ services:
       - CORE_PEER_LOCALMSPID=customerMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
       - CORE_PEER_ADDRESS=peer0.customer.supplychain.com:7051
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_basic
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
@@ -165,6 +203,7 @@ services:
     volumes:
         - /var/run/:/host/var/run/
         - ./crypto-config/peerOrganizations/customer.supplychain.com/peers/peer0.customer.supplychain.com/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/customer.supplychain.com/peers/peer0.customer.supplychain.com/tls:/etc/hyperledger/fabric/tls
         - ./crypto-config/peerOrganizations/customer.supplychain.com/users:/etc/hyperledger/msp/users
         - ./config:/etc/hyperledger/configtx
     depends_on:
@@ -241,6 +280,10 @@ services:
       - CORE_PEER_ID=cli
       - CORE_PEER_ADDRESS=peer0.warehouse.supplychain.com:7051
       - CORE_PEER_LOCALMSPID=warehouseMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/warehouse.supplychain.com/peers/peer0.warehouse.supplychain.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/warehouse.supplychain.com/peers/peer0.warehouse.supplychain.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/warehouse.supplychain.com/peers/peer0.warehouse.supplychain.com/tls/ca.crt
       - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/warehouse.supplychain.com/users/Admin@warehouse.supplychain.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer

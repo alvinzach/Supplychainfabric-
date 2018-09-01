@@ -1,3 +1,17 @@
-<p>
-  warehouse works!
-</p>
+<form>
+   
+        <input type="text" class="form-control" [(ngModel)] ="id" name="id"/> <br>
+        <input type="text" class="form-control" [(ngModel)] ="status" name="status"/> <br>
+        <input type="submit" class="btn btn-lg btn-primary" (click)="submit()" />
+        
+        <div *ngIf="loading" class="alert alert-light" role="alert">
+            Updating ledger ..
+        </div>
+        <div *ngIf="success" class="alert alert-success" role="alert">
+            Ledger updated
+        </div>
+        <div *ngIf="failure" class="alert alert-danger" role="alert">
+            Some error occoured
+        </div>
+      
+</form>

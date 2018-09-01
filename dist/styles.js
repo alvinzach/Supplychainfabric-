@@ -539,7 +539,7 @@ if(false) {}
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /media/alvin/Data/workspace/supply-chain/front/src/styles.css */"./src/styles.css");
+module.exports = __webpack_require__(/*! /media/alvin/Data/workspace/supply-chain/front-end/src/styles.css */"./src/styles.css");
 
 
 /***/ })

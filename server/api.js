@@ -4,11 +4,22 @@ var Fabric_Client=require('fabric-client')
 var path=require('path')
 var util=require('util')
 var os=require('os')
+var fs=require('fs')
 var fabric_client=new Fabric_Client();
+var warehousePEM=fs.readFileSync('./crypto-config/peerOrganizations/warehouse.supplychain.com/msp/tlscacerts/tlsca.warehouse.supplychain.com-cert.pem')
+var collectionPEM=fs.readFileSync('./crypto-config/peerOrganizations/collection.supplychain.com/msp/tlscacerts/tlsca.collection.supplychain.com-cert.pem')
+var customerPEM=fs.readFileSync('./crypto-config/peerOrganizations/customer.supplychain.com/msp/tlscacerts/tlsca.customer.supplychain.com-cert.pem')
+var ordererPEM=fs.readFileSync('./crypto-config/ordererOrganizations/supplychain.com/orderers/orderer.supplychain.com/msp/tlscacerts/tlsca.supplychain.com-cert.pem')
 var channel=fabric_client.newChannel('supplychainchannel')
-var order= fabric_client.newOrderer('grpc://localhost:7050')
+var order= fabric_client.newOrderer('grpcs://localhost:7050',{
+	pem: Buffer.from(ordererPEM).toString(),
+    'ssl-target-name-override': 'orderer.supplychain.com'
+})
 channel.addOrderer(order)
-var peer=fabric_client.newPeer('grpc://localhost:7051')
+var peer=fabric_client.newPeer('grpcs://localhost:7051',{
+	pem: Buffer.from(warehousePEM).toString(),
+    'ssl-target-name-override': 'peer0.warehouse.supplychain.com'
+})
 channel.addPeer(peer)
 router.post('/getStatus',(req,res)=>{
     var member_user = null;
@@ -107,7 +118,10 @@ router.post('/warehouse/add',(req,res)=>{
             var sendPromise=channel.sendTransaction(request)
             promises.push(sendPromise)
             let event_hub =fabric_client.newEventHub();
-            event_hub.setPeerAddr('grpc://localhost:7053')
+            event_hub.setPeerAddr('grpcs://localhost:7053',{
+                pem: Buffer.from(warehousePEM).toString(),
+                'ssl-target-name-override': 'peer0.warehouse.supplychain.com'
+            })
             let txPromise=new Promise((resolve,reject)=>{
                 let handle=setTimeout(()=>{
                     event_hub.disconnect()
@@ -210,7 +224,10 @@ router.post('/collection/add',(req,res)=>{
             var sendPromise=channel.sendTransaction(request)
             promises.push(sendPromise)
             let event_hub =fabric_client.newEventHub();
-            event_hub.setPeerAddr('grpc://localhost:7153')
+            event_hub.setPeerAddr('grpcs://localhost:7153',{
+                pem: Buffer.from(collectionPEM).toString(),
+                'ssl-target-name-override': 'peer0.collection.supplychain.com'
+            })
             let txPromise=new Promise((resolve,reject)=>{
                 let handle=setTimeout(()=>{
                     event_hub.disconnect()
