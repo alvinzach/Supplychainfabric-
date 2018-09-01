@@ -17,7 +17,7 @@ Start the blockchain network :
        # ./start.sh
     ```
 Run : 
-    ```sh
+    ```
        $ node server
     ```
     And navigate to localhost:3000
